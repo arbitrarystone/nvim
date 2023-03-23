@@ -64,4 +64,7 @@
 ### 模糊查找
 1. <kbd>Space</kbd> + <kbd> f </kbd> + <kbd> f </kbd> 模糊查找当前文件夹
 2. <kbd>Space</kbd> + <kbd> z </kbd> + <kbd> b </kbd> 模糊查找所有buffers
-
+### go快捷键
+1. <kbd>Ctrl</kbd> + <kbd> o </kbd> 后退到前一个位置
+2. <kbd>Ctrl</kbd> + <kbd> i </kbd> 前进到前一个位置
+1. <kbd>Space</kbd> + <kbd> f </kbd> + <kbd> f </kbd> 模糊查找当前文件夹
