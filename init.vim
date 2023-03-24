@@ -1,7 +1,15 @@
-"l
-"   This is the personal .vimrc file of wanglk.
 "   You can find me at https://github.com/arbitrarystone/nvim/init.vim
 "
+
+  " 以下是 coc.nvim 官方示例定义的快捷键
+  " " 跳转到变量定义。normal 模式下在一个变量名上按一下 gd 即可跳转到定义位置，然后ctrl-o 可以快速返回原位置
+  " nmap <silent> gd <Plug>(coc-definition)
+  " " 跳转到值的类型定义，或者跳转到函数的返回值类型。在你想要快速查找一个类型的结构的时候非常有用
+  " nmap <silent> gy <Plug>(coc-type-definition)
+  " " 跳转到 interface 接口的对应实现。比如查看go里一个 interface 被哪些 struct 实现了
+  " nmap <silent> gi <Plug>(coc-implementation)
+  " " 打开当前变量、函数等被引用的列表。比如看一个 函数 在哪些地方使用了
+  " nmap <silent> gr <Plug>(coc-references)
 
 " -- GUI Settings ------------------------------------------------------------------
 
@@ -19,15 +27,11 @@
   Plug 'neoclide/coc.nvim'       " LSP 功能支持 & 插件体系
   Plug 'tpope/vim-surround'                             " 边界操作
   Plug 'preservim/nerdcommenter'                        " 代码注释
-  Plug 'mattn/emmet-vim'                                " html & css 代码补全
   Plug 'raimondi/delimitMate'                           " 符号自动补全
   Plug 'vim-airline/vim-airline'                        " 底部菜单
   Plug 'easymotion/vim-easymotion'                      " 光标快速跳转
   Plug 'terryma/vim-multiple-cursors'                   " 单词多选
 
-  Plug 'posva/vim-vue'
-  Plug 'leafgarland/typescript-vim'                     " 支持 ts 文件
-  Plug 'peitalin/vim-jsx-typescript'                    " React JSX 代码高亮
   Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }   " 目录内搜索
   Plug 'junegunn/fzf.vim'
   Plug 'psliwka/vim-smoothie'                           " 窗口平滑滚动
@@ -37,16 +41,21 @@
   Plug 'joshdick/onedark.vim'                           " 主题4
   Plug 'github/copilot.vim'
   Plug 'liuchengxu/vim-which-key', { 'on': ['WhichKey', 'WhichKey!'] }    " space 提示键
-  Plug 'ctrlpvim/ctrlp.vim'                             " 搜索文件
   Plug 'editorconfig/editorconfig-vim'
   " Plug 'epilande/vim-react-snippets'
   " Plug 'SirVer/ultisnips'
   Plug 'ferrine/md-img-paste.vim'
+
   Plug 'godlygeek/tabular' "必要插件，安装在vim-markdown前面
   Plug 'plasticboy/vim-markdown'
   Plug 'mzlogin/vim-markdown-toc'
   Plug 'iamcco/mathjax-support-for-mkdp'
   Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
+  Plug 'dense-analysis/ale'
+  Plug 'SirVer/ultisnips'
+  Plug 'AndrewRadev/splitjoin.vim'
+  Plug 'fatih/vim-go'
+  Plug 'fatih/molokai'
   call plug#end()
 
   " letax数学公式
@@ -96,7 +105,10 @@
   let g:airline_theme='onedark'
 
   syntax on
-  colorscheme neodark " solarized gruvbox neodark onedark
+  let g:rehash256 = 1
+let g:molokai_original = 1
+colorscheme molokai
+ " colorscheme neodark " solarized gruvbox neodark onedark
   " let g:neodark#background = '#303643'
   set background=dark
   set termguicolors
@@ -150,17 +162,19 @@
   noremap <leader>bg :call ToggleBG()<CR>
 
   " window
-  map <leader>d <C-d>
-  map <leader>u <C-u>
+  map <leader>d <C-f>
+  map <leader>u <C-b>
   map <leader>r <C-r>
 
   " buffer
-  nnoremap <Leader>bl :ls<CR>
-  nnoremap <Leader>bp :bp<CR>
-  nnoremap <Leader>bn :bn<CR>
   for i in range(1, 30)
     execute "nnoremap <Leader>b" . i . " :" . i . "b<CR>"
   endfor
+
+  nnoremap <Leader>bl :ls<CR>
+  nnoremap <Leader>bp :bp<CR>
+  nnoremap <Leader>bn :bn<CR>
+
   execute "nnoremap <Leader>vs :vs<CR>"
   execute "nnoremap <Leader>bd :bd<CR>"
   execute "nnoremap <Leader>sp :sp<CR>"
@@ -203,9 +217,6 @@
    autocmd FileType nerdtree syntax match NERDTreeDirSlash #/$# containedin=NERDTreeDir conceal contained
  augroup end
 
-  " ctrlp
-  let g:ctrlp_map = '<leader>p'
-
   " whichkey
   nnoremap <silent> <leader> :WhichKey '<Space>'<CR>
 
@@ -232,7 +243,7 @@
   endif
 
   " airline
-  let g:airline#extensions#tabline#enabled = 0        " tabline enabled 1 显示 0 隐藏
+  let g:airline#extensions#tabline#enabled = 1        " tabline enabled 1 显示 0 隐藏
   let g:airline#extensions#tabline#fnamemod = ':t'    " only show filename
   let g:airline#extensions#tabline#buffer_nr_show = 1
 
@@ -243,14 +254,7 @@
   nmap <silent> <Leader>jnw <Plug>(coc-diagnostic-next)
   nmap <silent> <Leader>jpw <Plug>(coc-diagnostic-prev)
   nmap <silent> <Leader>gc <Plug>(coc-git-commit)
-  nmap <silent> <leader>fo :CocFix<CR>
 
-  " coc.vim 用 tab 键触发补全
-  inoremap <silent><expr> <TAB>
-    \ pumvisible() ? "\<C-n>" :
-    \ <SID>check_back_space() ? "\<TAB>" :
-  \ coc#refresh()
-  inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<S-TAB>"
 
   " carbon 插件快捷键
   vnoremap <F5> :CarbonNowSh<CR>
@@ -269,13 +273,82 @@
   " markdown开启/关闭预览
   " " example
   nmap <leader>mt <Plug>MarkdownPreviewToggle
-  let g:mkdp_path_to_chrome='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome'
-  let g:mkdp_markdown_css=''
+  "let g:mkdp_path_to_chrome='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome'
+  "let g:mkdp_markdown_css=''
+  let g:mkdp_open_to_the_world = 1
+  let g:mkdp_open_ip = '127.0.0.1' " change to you vps or vm ip
+  let g:mkdp_port = 8080
+  function! g:EchoUrl(url)
+      :echo a:url
+  endfunction
+  let g:mkdp_browserfunc = 'g:EchoUrl'
 
   nmap <leader>w <C-w>
 
+  " fzf
+  nnoremap <silent> <Leader>fzf :Files<CR>
+  nnoremap <silent> <Leader>fzb :Buffers<CR>
+
+  " ale
+
+  " ale-setting {{{
+  let g:ale_set_highlights = 1
+  let g:ale_set_quickfix = 1
+  "自定义error和warning图标
+  let g:ale_sign_error = '✗'
+  let g:ale_sign_warning = '⚡'
+  "在vim自带的状态栏中整合ale
+  let g:ale_statusline_format = ['✗ %d', '⚡ %d', '✔ OK']
+  "显示Linter名称,出错或警告等相关信息
+  let g:ale_echo_msg_error_str = 'E'
+  let g:ale_echo_msg_warning_str = 'W'
+  let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
+  "打开文件时不进行检查
+  let g:ale_lint_on_enter = 1
+
+  "普通模式下，sp前往上一个错误或警告，sn前往下一个错误或警告
+  nmap sp <Plug>(ale_previous_wrap)
+  nmap sn <Plug>(ale_next_wrap)
+  "<Leader>s触发/关闭语法检查
+  " nmap <Leader>l :ALEToggle<CR>
+  "<Leader>d查看错误或警告的详细信息
+  nmap <Leader>e :ALEDetail<CR>
+  let g:ale_linters = {
+      \ 'go': ['golint', 'go vet', 'go fmt'],
+      \ }
+
+  " go 自动导包
+  autocmd BufWritePre *.go :call CocAction('runCommand', 'editor.action.organizeImport')
+  let g:go_fmt_autosave=1
+  let g:go_test_timeout = '10s'
+  let g:go_list_type="quickfix"
+
+  " 高亮显示
+  let g:go_highlight_types = 1
+  let g:go_highlight_fields = 1
+  let g:go_highlight_fields = 1
+  let g:go_highlight_function_calls = 1
+  let g:go_highlight_operators = 1
+  let g:go_highlight_extra_types = 1
+  let g:go_highlight_build_constraints = 1
+  let g:go_highlight_generate_tags = 1
 
 
+  autocmd BufNewFile,BufRead *.go setlocal noexpandtab tabstop=4 shiftwidth=4
+
+  " shortcut 
+  autocmd FileType go nmap <Leader>if <Plug>(go-info)
+  " 自动显示info信息,当光标停留在合法的描述符上后，会自动显示info信息
+  let g:go_auto_type_info = 1
+  "" 设置停留时间
+  set updatetime=100
+
+  " coc.vim 用 tab 键触发补全
+  inoremap <silent><expr> <S-TAB>
+    \ pumvisible() ? "\<C-n>" :
+    \ <SID>check_back_space() ? "\;" :
+  \ coc#refresh()
+  inoremap <expr><TAB> pumvisible() ? "\<C-p>" : "\<TAB>"
 " -- Functions ---------------------------------------------------------------------
 
   " 更换背景色
